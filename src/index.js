@@ -14,6 +14,8 @@ const { default: makeWASocket, useMultiFileAuthState, fetchLatestBaileysVersion,
 const config = require('./config');
 const { handleMessage } = require('./flowEngine');
 
+const qrcode = require('qrcode-terminal');
+
 // Suppress noisy Baileys logs (set to 'debug' for troubleshooting)
 const logger = {
   level: 'silent',
@@ -37,7 +39,7 @@ async function startBot() {
       creds: state.creds,
       keys: makeCacheableSignalKeyStore(state.keys, logger),
     },
-    printQRInTerminal: true,
+    printQRInTerminal: false, // We will handle it manually
     logger,
     generateHighQualityLinkPreview: false,
   });
@@ -50,6 +52,7 @@ async function startBot() {
     const { connection, lastDisconnect, qr } = update;
 
     if (qr) {
+      qrcode.generate(qr, { small: true });
       console.log('\n📱 Scan the QR code above with WhatsApp:');
       console.log('   WhatsApp → Settings → Linked Devices → Link a Device\n');
     }
